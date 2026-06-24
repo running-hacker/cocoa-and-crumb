@@ -1,0 +1,540 @@
+{
+  "orders": [],
+  "settings": {
+    "whatsappBackup": false,
+    "acceptingOrders": true
+  },
+  "products": [
+    {
+      "id": "marble-cake",
+      "name": "Marble Cake",
+      "category": "Cakes",
+      "emoji": "🍰",
+      "tag": "Bestseller",
+      "blurb": "Buttery vanilla & cocoa swirled into one stunning loaf.",
+      "art": "linear-gradient(135deg, #e8d5c0 0%, #6f4e37 48%, #ead7c2 100%)",
+      "price": 1000,
+      "image": null,
+      "weight": "800g",
+      "soldOut": false,
+      "sort": 0
+    },
+    {
+      "id": "choc-chip-banana",
+      "name": "Choc Chip Banana Bread",
+      "category": "Banana Bread",
+      "emoji": "🍌",
+      "tag": "Loaded",
+      "blurb": "Banana loaf loaded with melty chocolate chips.",
+      "art": "linear-gradient(160deg, #e0c08a, #7a5230)",
+      "price": 1000,
+      "image": null,
+      "weight": "800g",
+      "soldOut": false,
+      "sort": 1
+    },
+    {
+      "id": "plain-banana",
+      "name": "Plain Banana Bread",
+      "category": "Banana Bread",
+      "emoji": "🍞",
+      "tag": null,
+      "blurb": "Classic, moist banana loaf.",
+      "art": "linear-gradient(160deg, #ecd9a8, #c8a25c)",
+      "price": 800,
+      "image": null,
+      "weight": "800g",
+      "soldOut": false,
+      "sort": 2
+    },
+    {
+      "id": "lemon-cake",
+      "name": "Lemon Cake",
+      "category": "Cakes",
+      "emoji": "🍋",
+      "tag": "Zesty",
+      "blurb": "Zesty lemon loaf with a sweet lemon glaze.",
+      "art": "linear-gradient(160deg, #f0e2a0, #cda958)",
+      "price": 800,
+      "image": null,
+      "weight": "800g",
+      "soldOut": false,
+      "sort": 3
+    },
+    {
+      "id": "decadent-chocolate",
+      "name": "Decadent Chocolate Cake",
+      "category": "Cakes",
+      "emoji": "🍫",
+      "tag": "Rich",
+      "blurb": "Deep rich chocolate cake topped with glossy ganache.",
+      "art": "linear-gradient(160deg, #6b4a34, #3a2418)",
+      "price": 1000,
+      "image": null,
+      "weight": "800g",
+      "soldOut": false,
+      "sort": 4
+    },
+    {
+      "id": "vanilla-pound",
+      "name": "Vanilla Pound Cake",
+      "category": "Cakes",
+      "emoji": "🎂",
+      "tag": "Classic",
+      "blurb": "Golden classic that pairs beautifully with tea or coffee.",
+      "art": "linear-gradient(160deg, #ecdcc2, #c9a376)",
+      "price": 800,
+      "image": null,
+      "weight": "800g",
+      "soldOut": false,
+      "sort": 5
+    }
+  ],
+  "business": {
+    "name": "Rolling Pin",
+    "tagline": "Artisan Tea Cakes",
+    "location": "Nairobi, Kenya",
+    "speciality": "Tea cakes made for slow mornings, afternoon chai & gifting.",
+    "phone": "0797 528 174",
+    "whatsapp": "254797528174",
+    "instagram": "rollingpinke",
+    "tiktok": "rollingpinke",
+    "deliveryNote": "Delivery fee is confirmed based on your area.",
+    "noticeHours": 48,
+    "depositRate": 0.5,
+    "deliveryZones": [
+      {
+        "id": "ng1",
+        "route": "Ngong Road",
+        "area": "Ngong Town",
+        "fee": 200
+      },
+      {
+        "id": "ng2",
+        "route": "Ngong Road",
+        "area": "Ngong Vet",
+        "fee": 150
+      },
+      {
+        "id": "ng3",
+        "route": "Ngong Road",
+        "area": "Kibiko",
+        "fee": 250
+      },
+      {
+        "id": "ng4",
+        "route": "Ngong Road",
+        "area": "Bondeni",
+        "fee": 200
+      },
+      {
+        "id": "ng5",
+        "route": "Ngong Road",
+        "area": "Kimuka",
+        "fee": 300
+      },
+      {
+        "id": "ng6",
+        "route": "Ngong Road",
+        "area": "Ololua",
+        "fee": 250
+      },
+      {
+        "id": "ng7",
+        "route": "Ngong Road",
+        "area": "Kerarapon",
+        "fee": 250
+      },
+      {
+        "id": "ng8",
+        "route": "Ngong Road",
+        "area": "Karen (Miotoni, Bogani, Hardy)",
+        "fee": 300
+      },
+      {
+        "id": "ng9",
+        "route": "Ngong Road",
+        "area": "Ngando",
+        "fee": 400
+      },
+      {
+        "id": "ng10",
+        "route": "Ngong Road",
+        "area": "Lenana / Racecourse",
+        "fee": 400
+      },
+      {
+        "id": "ng11",
+        "route": "Ngong Road",
+        "area": "Santack",
+        "fee": 400
+      },
+      {
+        "id": "ng12",
+        "route": "Ngong Road",
+        "area": "Dagoretti Corner",
+        "fee": 450
+      },
+      {
+        "id": "ng13",
+        "route": "Ngong Road",
+        "area": "Adams Arcade / Woodley",
+        "fee": 450
+      },
+      {
+        "id": "ng14",
+        "route": "Ngong Road",
+        "area": "Riara Road / Junction Mall",
+        "fee": 450
+      },
+      {
+        "id": "ng15",
+        "route": "Ngong Road",
+        "area": "Kilimani",
+        "fee": 500
+      },
+      {
+        "id": "ng16",
+        "route": "Ngong Road",
+        "area": "Milimani",
+        "fee": 500
+      },
+      {
+        "id": "ng17",
+        "route": "Ngong Road",
+        "area": "Upper Hill",
+        "fee": 600
+      },
+      {
+        "id": "ww1",
+        "route": "Waiyaki Way",
+        "area": "Kikuyu Town",
+        "fee": 300
+      },
+      {
+        "id": "ww2",
+        "route": "Waiyaki Way",
+        "area": "Zambezi / Sigona / Regen",
+        "fee": 400
+      },
+      {
+        "id": "ww3",
+        "route": "Waiyaki Way",
+        "area": "Muthiga / Kinoo / 87",
+        "fee": 400
+      },
+      {
+        "id": "ww4",
+        "route": "Waiyaki Way",
+        "area": "Uthiru / Cooperation",
+        "fee": 400
+      },
+      {
+        "id": "ww5",
+        "route": "Waiyaki Way",
+        "area": "Mountain View",
+        "fee": 400
+      },
+      {
+        "id": "ww6",
+        "route": "Waiyaki Way",
+        "area": "Loresho",
+        "fee": 450
+      },
+      {
+        "id": "ww7",
+        "route": "Waiyaki Way",
+        "area": "Kangemi",
+        "fee": 400
+      },
+      {
+        "id": "ww8",
+        "route": "Waiyaki Way",
+        "area": "ABC Place / James Gichuru",
+        "fee": 400
+      },
+      {
+        "id": "ww9",
+        "route": "Waiyaki Way",
+        "area": "Kianda / Safaricom / Deloitte",
+        "fee": 450
+      },
+      {
+        "id": "ww10",
+        "route": "Waiyaki Way",
+        "area": "Muthangari",
+        "fee": 450
+      },
+      {
+        "id": "ww11",
+        "route": "Waiyaki Way",
+        "area": "Westlands (CBD, Rhapta Rd, Muthithi Rd)",
+        "fee": 450
+      },
+      {
+        "id": "ww12",
+        "route": "Waiyaki Way",
+        "area": "Brookside / School Lane",
+        "fee": 500
+      },
+      {
+        "id": "lr1",
+        "route": "Limuru Road",
+        "area": "Parklands (1st - 6th Avenue)",
+        "fee": 600
+      },
+      {
+        "id": "lr2",
+        "route": "Limuru Road",
+        "area": "City Park / Muthaiga",
+        "fee": 650
+      },
+      {
+        "id": "lr3",
+        "route": "Limuru Road",
+        "area": "Gigiri / UN Complex",
+        "fee": 650
+      },
+      {
+        "id": "lr4",
+        "route": "Limuru Road",
+        "area": "Warwick Centre / Village Market",
+        "fee": 650
+      },
+      {
+        "id": "lr5",
+        "route": "Limuru Road",
+        "area": "Runda (Old & New)",
+        "fee": 700
+      },
+      {
+        "id": "lr6",
+        "route": "Limuru Road",
+        "area": "Rosslyn (Lone Tree, Riviera)",
+        "fee": 700
+      },
+      {
+        "id": "lr7",
+        "route": "Limuru Road",
+        "area": "Nyari Estate",
+        "fee": 650
+      },
+      {
+        "id": "lr8",
+        "route": "Limuru Road",
+        "area": "Ruaka / Joyland",
+        "fee": 600
+      },
+      {
+        "id": "lr9",
+        "route": "Limuru Road",
+        "area": "Muchatha / Banana / Raini",
+        "fee": 700
+      },
+      {
+        "id": "lr10",
+        "route": "Limuru Road",
+        "area": "Tigoni / Limuru Town",
+        "fee": 850
+      },
+      {
+        "id": "kr1",
+        "route": "Kiambu Road",
+        "area": "Karura / Windsor",
+        "fee": 700
+      },
+      {
+        "id": "kr2",
+        "route": "Kiambu Road",
+        "area": "Muthaiga North",
+        "fee": 700
+      },
+      {
+        "id": "kr3",
+        "route": "Kiambu Road",
+        "area": "Ridgeways / Ridgeways Mall",
+        "fee": 700
+      },
+      {
+        "id": "kr4",
+        "route": "Kiambu Road",
+        "area": "Garden Estate",
+        "fee": 700
+      },
+      {
+        "id": "kr5",
+        "route": "Kiambu Road",
+        "area": "Northern Bypass Junction",
+        "fee": 750
+      },
+      {
+        "id": "kr6",
+        "route": "Kiambu Road",
+        "area": "Thindigua",
+        "fee": 750
+      },
+      {
+        "id": "kr7",
+        "route": "Kiambu Road",
+        "area": "Kasarini / Ineza",
+        "fee": 750
+      },
+      {
+        "id": "kr8",
+        "route": "Kiambu Road",
+        "area": "Mushroom Gardens",
+        "fee": 800
+      },
+      {
+        "id": "kr9",
+        "route": "Kiambu Road",
+        "area": "Edenville",
+        "fee": 800
+      },
+      {
+        "id": "kr10",
+        "route": "Kiambu Road",
+        "area": "Kirigiti",
+        "fee": 850
+      },
+      {
+        "id": "kr11",
+        "route": "Kiambu Road",
+        "area": "Kiambu Town",
+        "fee": 900
+      },
+      {
+        "id": "tr1",
+        "route": "Thika Road",
+        "area": "Pangani / Ngara / Guru Nanak",
+        "fee": 600
+      },
+      {
+        "id": "tr2",
+        "route": "Thika Road",
+        "area": "Ruaraka / Allsops",
+        "fee": 650
+      },
+      {
+        "id": "tr3",
+        "route": "Thika Road",
+        "area": "Garden City Mall",
+        "fee": 650
+      },
+      {
+        "id": "tr4",
+        "route": "Thika Road",
+        "area": "Roysambu",
+        "fee": 700
+      },
+      {
+        "id": "tr5",
+        "route": "Thika Road",
+        "area": "Kasarani (ICPAC, Mwiki)",
+        "fee": 750
+      },
+      {
+        "id": "tr6",
+        "route": "Thika Road",
+        "area": "Githurai 44 / 45",
+        "fee": 800
+      },
+      {
+        "id": "tr7",
+        "route": "Thika Road",
+        "area": "Kahawa Sukari / Wendani",
+        "fee": 850
+      },
+      {
+        "id": "tr8",
+        "route": "Thika Road",
+        "area": "Kenyatta University (KU)",
+        "fee": 900
+      },
+      {
+        "id": "tr9",
+        "route": "Thika Road",
+        "area": "Ruiru (Kimbo, Kihunguro)",
+        "fee": 1000
+      },
+      {
+        "id": "tr10",
+        "route": "Thika Road",
+        "area": "Juja (High Point, Kalimoni)",
+        "fee": 1100
+      },
+      {
+        "id": "tr11",
+        "route": "Thika Road",
+        "area": "Thika Town",
+        "fee": 1300
+      },
+      {
+        "id": "mr1",
+        "route": "Mombasa Road",
+        "area": "Nairobi West",
+        "fee": 400
+      },
+      {
+        "id": "mr2",
+        "route": "Mombasa Road",
+        "area": "South C (Five Star, Akila)",
+        "fee": 400
+      },
+      {
+        "id": "mr3",
+        "route": "Mombasa Road",
+        "area": "South B (Hazina, Golden Gate)",
+        "fee": 450
+      },
+      {
+        "id": "mr4",
+        "route": "Mombasa Road",
+        "area": "Bellevue / Panari",
+        "fee": 450
+      },
+      {
+        "id": "mr5",
+        "route": "Mombasa Road",
+        "area": "Imara Daima (Villa Franca)",
+        "fee": 550
+      },
+      {
+        "id": "mr6",
+        "route": "Mombasa Road",
+        "area": "General Motors (GM) / Cabanas",
+        "fee": 550
+      },
+      {
+        "id": "mr7",
+        "route": "Mombasa Road",
+        "area": "JKIA / Airport Area",
+        "fee": 650
+      },
+      {
+        "id": "mr8",
+        "route": "Mombasa Road",
+        "area": "Syokimau (Katani Road)",
+        "fee": 650
+      },
+      {
+        "id": "mr9",
+        "route": "Mombasa Road",
+        "area": "Mlolongo / Sabaki",
+        "fee": 750
+      },
+      {
+        "id": "mr10",
+        "route": "Mombasa Road",
+        "area": "Athi River",
+        "fee": 900
+      },
+      {
+        "id": "mr11",
+        "route": "Mombasa Road",
+        "area": "Kitengela",
+        "fee": 950
+      }
+    ]
+  }
+}
