@@ -320,6 +320,15 @@ async function supabaseStore() {
       const { error } = await db.from('orders').delete().eq('id', id)
       if (error) throw new Error(error.message)
     },
+    async savePendingOrder(reference, data) {
+      await db.from('pending_orders').upsert({ reference, data })
+      // lazy cleanup: drop anything older than a day so the table can't grow forever
+      await db.from('pending_orders').delete().lt('created_at', new Date(Date.now() - 864e5).toISOString())
+    },
+    async getPendingOrder(reference) {
+      const { data } = await db.from('pending_orders').select('data').eq('reference', reference).maybeSingle()
+      return data?.data || null
+    },
 
     async listProducts() {
       const { data, error } = await db.from('products').select('*').order('sort', { ascending: true })
@@ -455,6 +464,19 @@ function fileStore() {
       data.orders = data.orders.filter((o) => o.id !== id)
       write(data)
     },
+    async savePendingOrder(reference, order) {
+      const data = read()
+      data.pending = data.pending || {}
+      data.pending[reference] = { data: order, createdAt: Date.now() }
+      // lazy cleanup: drop anything older than a day
+      for (const [ref, rec] of Object.entries(data.pending)) {
+        if (Date.now() - (rec.createdAt || 0) > 864e5) delete data.pending[ref]
+      }
+      write(data)
+    },
+    async getPendingOrder(reference) {
+      return read().pending?.[reference]?.data || null
+    },
 
     async listProducts() {
       return read().products.slice().sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
@@ -522,6 +544,8 @@ export const getOrderByCode = (...a) => store.getOrderByCode(...a)
 export const upsertPaidOrder = (...a) => store.upsertPaidOrder(...a)
 export const setStatus = (...a) => store.setStatus(...a)
 export const deleteOrder = (...a) => store.deleteOrder(...a)
+export const savePendingOrder = (...a) => store.savePendingOrder(...a)
+export const getPendingOrder = (...a) => store.getPendingOrder(...a)
 export const listProducts = (...a) => store.listProducts(...a)
 export const createProduct = (...a) => store.createProduct(...a)
 export const updateProduct = (...a) => store.updateProduct(...a)

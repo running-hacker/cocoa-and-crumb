@@ -39,6 +39,8 @@ import {
   upsertPaidOrder,
   setStatus,
   deleteOrder,
+  savePendingOrder,
+  getPendingOrder,
   listProducts,
   createProduct,
   updateProduct,
@@ -169,18 +171,20 @@ function cleanDetails(raw = {}) {
 // Turn a verified Paystack transaction into a saved order. Idempotent because the
 // store upserts on payment_ref, so verify and the webhook can both run safely.
 async function createOrderFromTransaction(d) {
-  // Recover the order we tucked into the transaction at initialize. Paystack may hand
-  // metadata back as an object OR as a JSON string, so handle both.
-  let meta = d?.metadata
-  if (typeof meta === 'string') {
-    try { meta = JSON.parse(meta) } catch { meta = null }
+  // Primary source: the order we saved on our own server the moment checkout started,
+  // keyed by the Paystack reference. This never depends on Paystack handing data back.
+  let details = null
+  if (d?.reference) {
+    try { details = await getPendingOrder(d.reference) } catch (e) { console.error('getPendingOrder failed:', e.message) }
   }
-  const details = meta?.order
+  // Fallback: the copy tucked into the transaction metadata (object OR JSON string).
   if (!details) {
-    const seen = typeof d?.metadata === 'object'
-      ? JSON.stringify(d?.metadata)?.slice(0, 300)
-      : String(d?.metadata).slice(0, 300)
-    console.error(`Order metadata missing on transaction ${d?.reference}; metadata was: ${seen}`)
+    let meta = d?.metadata
+    if (typeof meta === 'string') { try { meta = JSON.parse(meta) } catch { meta = null } }
+    details = meta?.order || null
+  }
+  if (!details) {
+    console.error(`No order recovered for transaction ${d?.reference} (no pending record, metadata unreadable).`)
     return null
   }
   const order = await upsertPaidOrder(cleanDetails(details), {
@@ -367,10 +371,18 @@ app.post('/api/paystack/initialize', async (req, res) => {
     if (!data.status) {
       return res.status(502).json({ error: data.message || 'Paystack could not start the payment.' })
     }
+    const reference = data.data.reference
+    // Save the priced order on our side, keyed by the Paystack reference, so payment
+    // confirmation can recover it even if Paystack doesn't return the metadata intact.
+    try {
+      await savePendingOrder(reference, details)
+    } catch (e) {
+      console.error('Could not save pending order:', e.message)
+    }
     res.json({
       authorizationUrl: data.data.authorization_url,
       accessCode: data.data.access_code,
-      reference: data.data.reference,
+      reference,
     })
   } catch (e) {
     res.status(502).json({ error: `Could not reach Paystack: ${e.message}` })

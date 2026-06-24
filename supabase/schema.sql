@@ -41,6 +41,16 @@ create table if not exists orders (
 create index if not exists orders_created_at_idx on orders (created_at desc);
 create index if not exists orders_status_idx on orders (status);
 
+-- Orders-in-progress. The full order is saved here the moment Paystack checkout
+-- starts, keyed by the Paystack reference, so a paid order is never lost if Paystack
+-- doesn't hand its metadata back intact. The server reads it when payment is confirmed
+-- and clears stale rows automatically.
+create table if not exists pending_orders (
+  reference  text primary key,
+  data       jsonb not null,
+  created_at timestamptz not null default now()
+);
+
 -- The menu. The server seeds the starting cakes the first time this table is empty.
 create table if not exists products (
   id        text primary key,
@@ -85,6 +95,7 @@ on conflict (id) do nothing;
 -- public policies means the anon/public key cannot read anything — orders and
 -- customer details are only ever reachable through our own server.
 alter table orders enable row level security;
+alter table pending_orders enable row level security;
 alter table products enable row level security;
 alter table business enable row level security;
 alter table settings enable row level security;
