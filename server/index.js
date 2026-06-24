@@ -547,10 +547,18 @@ app.post('/api/uploads', requireAdmin, async (req, res) => {
   }
 })
 
-app.listen(PORT, () => {
-  console.log(`Rolling Pin server listening on http://localhost:${PORT} (store: ${storeMode})`)
-  if (!SECRET) console.log('  (PAYSTACK_SECRET_KEY not set — payments will return a 503 until you add it)')
-  if (ADMIN_PASSWORD === 'rollingpin') {
-    console.log('  (ADMIN_PASSWORD not set — using the default "rollingpin". Set it in .env before going live.)')
-  }
-})
+// Start a long-lived listener only when run directly (local dev, or a normal Node
+// host). On Vercel the app is imported by api/index.js and invoked per request, so
+// there's no port to listen on — VERCEL is set in that environment.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Rolling Pin server listening on http://localhost:${PORT} (store: ${storeMode})`)
+    if (!SECRET) console.log('  (PAYSTACK_SECRET_KEY not set — payments will return a 503 until you add it)')
+    if (ADMIN_PASSWORD === 'rollingpin') {
+      console.log('  (ADMIN_PASSWORD not set — using the default "rollingpin". Set it in .env before going live.)')
+    }
+  })
+}
+
+// Exported so a serverless function (api/index.js on Vercel) can hand requests to it.
+export default app

@@ -14,6 +14,15 @@ const useSupabase = Boolean(URL && SERVICE_KEY)
 
 export const storeMode = useSupabase ? 'supabase' : 'file'
 
+// A serverless host (Vercel) has no writable disk, so the local file store can't work
+// there — Supabase is required. Fail loudly with a clear message instead of a cryptic
+// read-only-filesystem error on the first write.
+if (process.env.VERCEL && !useSupabase) {
+  throw new Error(
+    'Supabase is required on Vercel. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the Vercel project environment variables.',
+  )
+}
+
 const STATUS_FLOW = { New: 'Baking', Baking: 'Ready', Ready: 'Completed', Completed: null }
 const IMAGE_BUCKET = 'product-images'
 
