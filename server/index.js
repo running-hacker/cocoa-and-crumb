@@ -169,8 +169,20 @@ function cleanDetails(raw = {}) {
 // Turn a verified Paystack transaction into a saved order. Idempotent because the
 // store upserts on payment_ref, so verify and the webhook can both run safely.
 async function createOrderFromTransaction(d) {
-  const details = d?.metadata?.order
-  if (!details) return null
+  // Recover the order we tucked into the transaction at initialize. Paystack may hand
+  // metadata back as an object OR as a JSON string, so handle both.
+  let meta = d?.metadata
+  if (typeof meta === 'string') {
+    try { meta = JSON.parse(meta) } catch { meta = null }
+  }
+  const details = meta?.order
+  if (!details) {
+    const seen = typeof d?.metadata === 'object'
+      ? JSON.stringify(d?.metadata)?.slice(0, 300)
+      : String(d?.metadata).slice(0, 300)
+    console.error(`Order metadata missing on transaction ${d?.reference}; metadata was: ${seen}`)
+    return null
+  }
   const order = await upsertPaidOrder(cleanDetails(details), {
     amountPaid: d.amount / 100, // Paystack subunit -> KES
     paymentRef: d.reference,
