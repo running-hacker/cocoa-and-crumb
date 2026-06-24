@@ -15,7 +15,6 @@ export default function Navbar() {
         <div className="nav-links">
           <NavLink to="/" end>Menu</NavLink>
           <NavLink to="/track" className="menu-only">Track order</NavLink>
-          <NavLink to="/admin" className="menu-only">Kitchen</NavLink>
           <Link to="/order" className="btn btn-primary" style={{ padding: '10px 22px' }}>
             Order now
           </Link>

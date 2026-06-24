@@ -130,6 +130,16 @@ and webhook URL in Vercel + Paystack, redeploy, and you're open for business.
 
 ---
 
+## Order notifications (optional, WhatsApp)
+
+When an order is paid for, the app can automatically WhatsApp the **customer** their
+confirmation (with the order number) and send **you** a new-order alert. This is wired up
+already but switched off until you add Meta WhatsApp credentials. The full one-time setup
+(Meta app, the two message templates, and the env vars) is in **[WHATSAPP.md](WHATSAPP.md)**.
+The order page's on-screen confirmation works regardless.
+
+---
+
 ## Good to know
 
 - **Local dev is unchanged.** Two terminals: `npm run server` (API on :3001) and

@@ -52,6 +52,7 @@ import {
   updateDeliveryZone,
   deleteDeliveryZone,
 } from './store.js'
+import { notifyOrderPlaced } from './notify.js'
 
 const PORT = process.env.PORT || 3001
 const SECRET = process.env.PAYSTACK_SECRET_KEY || ''
@@ -170,11 +171,27 @@ function cleanDetails(raw = {}) {
 async function createOrderFromTransaction(d) {
   const details = d?.metadata?.order
   if (!details) return null
-  return upsertPaidOrder(cleanDetails(details), {
+  const order = await upsertPaidOrder(cleanDetails(details), {
     amountPaid: d.amount / 100, // Paystack subunit -> KES
     paymentRef: d.reference,
     paymentChannel: d.channel || null,
   })
+  if (!order) return null
+
+  // Send WhatsApp confirmations exactly once — only when the order was just created,
+  // not on the idempotent re-hit from the verify/webhook pair. Awaited (serverless
+  // freezes after the response) but wrapped so a notify failure never breaks the order.
+  const isNew = order._new
+  delete order._new
+  if (isNew) {
+    try {
+      const ownerNumber = (await getBusiness()).whatsapp
+      await notifyOrderPlaced(order, ownerNumber)
+    } catch (e) {
+      console.error('Order notification failed:', e.message)
+    }
+  }
+  return order
 }
 
 // The webhook must read the RAW body to verify Paystack's signature, so it is

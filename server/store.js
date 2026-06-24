@@ -309,7 +309,7 @@ async function supabaseStore() {
       const order = buildOrder(details, payment)
       const { data, error } = await db.from('orders').insert(orderToRow(order)).select().single()
       if (error) throw new Error(error.message)
-      return rowToOrder(data)
+      return { ...rowToOrder(data), _new: true } // _new: just created (for one-shot notify)
     },
     async setStatus(id, status) {
       const { data, error } = await db.from('orders').update({ status }).eq('id', id).select().maybeSingle()
@@ -440,7 +440,7 @@ function fileStore() {
       while (data.orders.some((o) => o.code === order.code)) order = buildOrder(details, payment)
       data.orders.push(order)
       write(data)
-      return order
+      return { ...order, _new: true } // _new: just created (for one-shot notify)
     },
     async setStatus(id, status) {
       const data = read()
