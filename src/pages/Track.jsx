@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { getOrderByCode, STATUSES } from '../data/orders.js'
-import { formatPrice } from '../data/business.js'
+import { formatPrice, BUSINESS } from '../data/business.js'
+import { payBalance } from '../data/payments.js'
 
 const STEP_COPY = {
   New: { title: 'Order received', icon: '📝', desc: 'We have your order and will confirm shortly.' },
@@ -15,6 +16,8 @@ export default function Track() {
   const [code, setCode] = useState(params.get('code') || '')
   const [order, setOrder] = useState(null)
   const [searched, setSearched] = useState(false)
+  const [paying, setPaying] = useState(false)
+  const [payError, setPayError] = useState('')
 
   async function lookup(value) {
     try {
@@ -23,6 +26,21 @@ export default function Track() {
       setOrder(null)
     }
     setSearched(true)
+  }
+
+  async function payNow() {
+    setPaying(true)
+    setPayError('')
+    try {
+      const { authorizationUrl } = await payBalance({
+        code: order.code,
+        callbackUrl: `${window.location.origin}/payment/callback`,
+      })
+      window.location.href = authorizationUrl
+    } catch (e) {
+      setPayError(`${e.message} You can also reach ${BUSINESS.name} on WhatsApp.`)
+      setPaying(false)
+    }
   }
 
   useEffect(() => {
@@ -80,6 +98,20 @@ export default function Track() {
                   {order.paymentStatus} · {formatPrice(order.amountPaid)}
                   {order.balance > 0 ? ` · balance ${formatPrice(order.balance)}` : ''}
                 </p>
+              )}
+              {order.balance > 0 && (
+                <>
+                  <button className="btn btn-primary btn-block" style={{ marginTop: 16 }}
+                    disabled={paying} onClick={payNow}>
+                    {paying ? 'Taking you to payment…' : `Pay balance ${formatPrice(order.balance)} →`}
+                  </button>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--muted)', margin: '10px 0 0' }}>
+                    Secure payment by Paystack — card or M-Pesa. Settles your order in full.
+                  </p>
+                  {payError && (
+                    <p style={{ color: 'var(--berry)', fontSize: '0.85rem', margin: '8px 0 0' }}>{payError}</p>
+                  )}
+                </>
               )}
             </div>
 

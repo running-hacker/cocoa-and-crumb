@@ -316,6 +316,20 @@ async function supabaseStore() {
       if (error) throw new Error(error.message)
       return data ? rowToOrder(data) : null
     },
+    async markOrderPaidInFull(code) {
+      const found = await db.from('orders').select('total').eq('code', code).maybeSingle()
+      if (!found.data) return null
+      const total = Number(found.data.total) || 0
+      // Set (not increment) so applying verify + webhook for the same payment is idempotent.
+      const { data, error } = await db
+        .from('orders')
+        .update({ amount_paid: total, balance: 0, payment_status: 'Paid in full' })
+        .eq('code', code)
+        .select()
+        .single()
+      if (error) throw new Error(error.message)
+      return rowToOrder(data)
+    },
     async deleteOrder(id) {
       const { error } = await db.from('orders').delete().eq('id', id)
       if (error) throw new Error(error.message)
@@ -459,6 +473,16 @@ function fileStore() {
       write(data)
       return order
     },
+    async markOrderPaidInFull(code) {
+      const data = read()
+      const order = data.orders.find((o) => o.code === code)
+      if (!order) return null
+      order.amountPaid = Number(order.total) || 0
+      order.balance = 0
+      order.paymentStatus = 'Paid in full'
+      write(data)
+      return order
+    },
     async deleteOrder(id) {
       const data = read()
       data.orders = data.orders.filter((o) => o.id !== id)
@@ -543,6 +567,7 @@ export const listOrders = (...a) => store.listOrders(...a)
 export const getOrderByCode = (...a) => store.getOrderByCode(...a)
 export const upsertPaidOrder = (...a) => store.upsertPaidOrder(...a)
 export const setStatus = (...a) => store.setStatus(...a)
+export const markOrderPaidInFull = (...a) => store.markOrderPaidInFull(...a)
 export const deleteOrder = (...a) => store.deleteOrder(...a)
 export const savePendingOrder = (...a) => store.savePendingOrder(...a)
 export const getPendingOrder = (...a) => store.getPendingOrder(...a)

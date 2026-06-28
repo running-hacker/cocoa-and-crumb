@@ -38,6 +38,7 @@ import {
   getOrderByCode,
   upsertPaidOrder,
   setStatus,
+  markOrderPaidInFull,
   deleteOrder,
   savePendingOrder,
   getPendingOrder,
@@ -168,16 +169,33 @@ function cleanDetails(raw = {}) {
   }
 }
 
+// Decide what a successful payment was for and apply it — a first payment (create the
+// order) or a balance top-up (settle the existing order). Used by verify AND the
+// webhook, so both routes behave identically. Returns the affected order (or null).
+async function finalizeTransaction(d) {
+  let pending = null
+  if (d?.reference) {
+    try { pending = await getPendingOrder(d.reference) } catch (e) { console.error('getPendingOrder failed:', e.message) }
+  }
+  // A small, reliable hint also rides in the transaction metadata as a fallback.
+  let meta = d?.metadata
+  if (typeof meta === 'string') { try { meta = JSON.parse(meta) } catch { meta = null } }
+  const kind = pending?.kind || meta?.kind
+
+  if (kind === 'balance') {
+    const code = pending?.code || meta?.code
+    if (!code) { console.error(`Balance payment ${d?.reference} had no order code.`); return null }
+    return markOrderPaidInFull(code) // idempotent: sets the order to paid in full
+  }
+  return createOrderFromTransaction(d, pending)
+}
+
 // Turn a verified Paystack transaction into a saved order. Idempotent because the
 // store upserts on payment_ref, so verify and the webhook can both run safely.
-async function createOrderFromTransaction(d) {
-  // Primary source: the order we saved on our own server the moment checkout started,
-  // keyed by the Paystack reference. This never depends on Paystack handing data back.
-  let details = null
-  if (d?.reference) {
-    try { details = await getPendingOrder(d.reference) } catch (e) { console.error('getPendingOrder failed:', e.message) }
-  }
-  // Fallback: the copy tucked into the transaction metadata (object OR JSON string).
+async function createOrderFromTransaction(d, pending) {
+  // Prefer the order we saved at checkout (keyed by reference); fall back to the copy
+  // tucked into the transaction metadata.
+  let details = pending?.order || null
   if (!details) {
     let meta = d?.metadata
     if (typeof meta === 'string') { try { meta = JSON.parse(meta) } catch { meta = null } }
@@ -228,10 +246,10 @@ app.post('/api/paystack/webhook', express.raw({ type: '*/*' }), async (req, res)
   // metadata. This is the safety net if the customer closes the tab before redirect.
   if (event.event === 'charge.success') {
     try {
-      const order = await createOrderFromTransaction(event.data)
+      const order = await finalizeTransaction(event.data)
       if (order) console.log(`[paystack] charge.success ${event.data.reference} -> order ${order.code}`)
     } catch (e) {
-      console.error(`[paystack] webhook could not save order: ${e.message}`)
+      console.error(`[paystack] webhook could not finalize payment: ${e.message}`)
     }
   }
   res.sendStatus(200)
@@ -375,7 +393,7 @@ app.post('/api/paystack/initialize', async (req, res) => {
     // Save the priced order on our side, keyed by the Paystack reference, so payment
     // confirmation can recover it even if Paystack doesn't return the metadata intact.
     try {
-      await savePendingOrder(reference, details)
+      await savePendingOrder(reference, { kind: 'order', order: details })
     } catch (e) {
       console.error('Could not save pending order:', e.message)
     }
@@ -404,13 +422,66 @@ app.get('/api/paystack/verify/:reference', async (req, res) => {
     if (d.status !== 'success') {
       return res.json({ paid: false, status: d.status })
     }
-    const order = await createOrderFromTransaction(d)
+    const order = await finalizeTransaction(d)
     if (!order) {
-      return res.status(422).json({ error: 'Payment succeeded but the order details were missing.' })
+      return res.status(422).json({ error: 'Payment succeeded but we could not match it to an order. Please contact us.' })
     }
     res.json({ paid: true, status: d.status, order })
   } catch (e) {
     res.status(502).json({ error: `Could not verify the payment: ${e.message}` })
+  }
+})
+
+// Pay the remaining balance on an existing order (the customer does this from their
+// Track page on the day). The amount is the order's own balance — read server-side, so
+// it can't be tampered with. On success the verify/webhook flow settles the order.
+app.post('/api/paystack/pay-balance', async (req, res) => {
+  if (!ensureKey(res)) return
+  const { code, callbackUrl } = req.body || {}
+  if (!code) return res.status(400).json({ error: 'Missing order code.' })
+
+  let order
+  try {
+    order = await getOrderByCode(String(code))
+  } catch {
+    return res.status(503).json({ error: 'Could not load your order right now. Please try again.' })
+  }
+  if (!order) return res.status(404).json({ error: 'No order found for that code.' })
+
+  const balance = Number(order.balance) || 0
+  if (!(balance > 0)) return res.status(400).json({ error: 'This order is already paid in full.' })
+  const email = order.customer?.email
+  if (!email) return res.status(400).json({ error: 'This order has no email on file for the receipt.' })
+
+  try {
+    const r = await fetch(`${PAYSTACK}/transaction/initialize`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${SECRET}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        amount: Math.round(balance * 100), // KES -> subunit
+        currency: 'KES',
+        metadata: { kind: 'balance', code: order.code },
+        callback_url: callbackUrl,
+      }),
+    })
+    const data = await r.json()
+    if (!data.status) {
+      return res.status(502).json({ error: data.message || 'Paystack could not start the payment.' })
+    }
+    const reference = data.data.reference
+    try {
+      await savePendingOrder(reference, { kind: 'balance', code: order.code })
+    } catch (e) {
+      console.error('Could not save pending balance:', e.message)
+    }
+    res.json({
+      authorizationUrl: data.data.authorization_url,
+      accessCode: data.data.access_code,
+      reference,
+    })
+  } catch (e) {
+    res.status(502).json({ error: `Could not reach Paystack: ${e.message}` })
   }
 })
 

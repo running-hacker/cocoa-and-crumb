@@ -25,3 +25,16 @@ export async function verifyPayment(reference) {
   if (!r.ok) throw new Error(data.error || 'Could not confirm the payment.')
   return data // { paid, status, order }
 }
+
+// Pay the remaining balance on an existing order (from the Track page). The server
+// works out the amount from the order itself, so only the order code is needed.
+export async function payBalance({ code, callbackUrl }) {
+  const r = await fetch(`${API}/api/paystack/pay-balance`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, callbackUrl }),
+  })
+  const data = await r.json().catch(() => ({}))
+  if (!r.ok) throw new Error(data.error || 'Could not start the balance payment. Please try again.')
+  return data // { authorizationUrl, accessCode, reference }
+}
