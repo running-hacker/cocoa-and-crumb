@@ -1,15 +1,29 @@
 import { Link } from 'react-router-dom'
 import { BUSINESS } from '../data/business.js'
 
+const WhatsAppIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M17.47 14.38c-.29-.15-1.7-.84-1.96-.93-.26-.1-.45-.15-.64.15-.19.29-.74.93-.91 1.12-.17.19-.33.21-.62.07-.29-.15-1.22-.45-2.33-1.43-.86-.77-1.44-1.72-1.61-2.01-.17-.29-.02-.45.13-.59.13-.13.29-.34.43-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.51-.07-.15-.64-1.55-.88-2.12-.23-.56-.47-.48-.64-.49l-.55-.01c-.19 0-.5.07-.76.36-.26.29-1 .98-1 2.38s1.02 2.76 1.17 2.95c.15.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.12.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.34zM12 2a10 10 0 0 0-8.54 15.26L2 22l4.85-1.27A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 0 1 6.96 12.55l-.2.31.6 2.2-2.26-.59-.3.18A8.2 8.2 0 1 1 12 3.8z" />
+  </svg>
+)
+
+const InstagramIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M12 2c2.72 0 3.06.01 4.12.06 1.07.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.56.55.89 1.11 1.15 1.77.25.64.42 1.36.47 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.07-.22 1.79-.47 2.43-.26.66-.6 1.22-1.15 1.77-.55.56-1.11.89-1.77 1.15-.64.25-1.36.42-2.43.47-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.07-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.36-.47-2.43C2.01 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.07.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77.55-.56 1.11-.89 1.77-1.15.64-.25 1.36-.42 2.43-.47C8.94 2.01 9.28 2 12 2zm0 1.8c-2.67 0-2.99.01-4.04.06-.98.04-1.5.21-1.86.35-.47.18-.8.4-1.15.75-.35.35-.57.68-.75 1.15-.14.36-.31.88-.35 1.86-.05 1.05-.06 1.37-.06 4.04s.01 2.99.06 4.04c.04.98.21 1.5.35 1.86.18.47.4.8.75 1.15.35.35.68.57 1.15.75.36.14.88.31 1.86.35 1.05.05 1.37.06 4.04.06s2.99-.01 4.04-.06c.98-.04 1.5-.21 1.86-.35.47-.18.8-.4 1.15-.75.35-.35.57-.68.75-1.15.14-.36.31-.88.35-1.86.05-1.05.06-1.37.06-4.04s-.01-2.99-.06-4.04c-.04-.98-.21-1.5-.35-1.86a3.1 3.1 0 0 0-.75-1.15 3.1 3.1 0 0 0-1.15-.75c-.36-.14-.88-.31-1.86-.35-1.05-.05-1.37-.06-4.04-.06zm0 3.06A5.14 5.14 0 1 1 12 17.14 5.14 5.14 0 0 1 12 6.86zm0 1.8a3.34 3.34 0 1 0 0 6.68 3.34 3.34 0 0 0 0-6.68zm5.34-.94a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z" />
+  </svg>
+)
+
+const TikTokIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M16.6 5.82a4.28 4.28 0 0 1-1.05-2.82h-3.1v12.3a2.59 2.59 0 1 1-2.59-2.59c.27 0 .53.04.78.12V9.66a5.66 5.66 0 0 0-.78-.06 5.69 5.69 0 1 0 5.69 5.69V8.49a7.33 7.33 0 0 0 4.28 1.37V6.76a4.28 4.28 0 0 1-3.23-.94z" />
+  </svg>
+)
+
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="container">
         <div className="footer-grid">
-          <div>
-            <h4>{BUSINESS.name}</h4>
-            <p>{BUSINESS.speciality} Freshly baked in {BUSINESS.location} and delivered to your door.</p>
-          </div>
           <div>
             <h4>Order</h4>
             <Link to="/">Menu</Link>
@@ -18,14 +32,17 @@ export default function Footer() {
           </div>
           <div>
             <h4>Say hello</h4>
-            <a href={`https://wa.me/${BUSINESS.whatsapp}`} target="_blank" rel="noreferrer">
-              WhatsApp · {BUSINESS.phone}
+            <a className="footer-social" href={`https://wa.me/${BUSINESS.whatsapp}`} target="_blank" rel="noreferrer">
+              <WhatsAppIcon />
+              <span>{BUSINESS.phone}</span>
             </a>
-            <a href={`https://instagram.com/${BUSINESS.instagram}`} target="_blank" rel="noreferrer">
-              Instagram · @{BUSINESS.instagram}
+            <a className="footer-social" href={`https://instagram.com/${BUSINESS.instagram}`} target="_blank" rel="noreferrer">
+              <InstagramIcon />
+              <span>@{BUSINESS.instagram}</span>
             </a>
-            <a href={`https://tiktok.com/@${BUSINESS.tiktok}`} target="_blank" rel="noreferrer">
-              TikTok · @{BUSINESS.tiktok}
+            <a className="footer-social" href={`https://tiktok.com/@${BUSINESS.tiktok}`} target="_blank" rel="noreferrer">
+              <TikTokIcon />
+              <span>@{BUSINESS.tiktok}</span>
             </a>
           </div>
         </div>

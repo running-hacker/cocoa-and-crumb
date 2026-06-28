@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { getProducts, categoriesFrom, imageUrl } from '../data/products.js'
 import { BUSINESS, formatPrice } from '../data/business.js'
@@ -7,6 +7,7 @@ export default function Home() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [category, setCategory] = useState('All')
+  const [slide, setSlide] = useState(0)
 
   useEffect(() => {
     let alive = true
@@ -23,7 +24,20 @@ export default function Home() {
 
   const categories = categoriesFrom(products)
   const list = category === 'All' ? products : products.filter((p) => p.category === category)
-  const sampleWeight = products[0]?.weight || '800g'
+
+  // Cakes to showcase in the hero slideshow — available ones, else whatever we have.
+  const slides = useMemo(() => {
+    const available = products.filter((p) => !p.soldOut)
+    return available.length ? available : products
+  }, [products])
+  const current = slides.length ? slide % slides.length : 0
+
+  // Auto-advance the hero slideshow.
+  useEffect(() => {
+    if (slides.length <= 1) return
+    const id = setInterval(() => setSlide((s) => (s + 1) % slides.length), 3200)
+    return () => clearInterval(id)
+  }, [slides.length])
 
   return (
     <>
@@ -32,7 +46,7 @@ export default function Home() {
           <div>
             <div className="eyebrow">{BUSINESS.tagline} · {BUSINESS.location}</div>
             <h1>
-              Baked for slow mornings &amp; <em>afternoon chai</em>.
+              Baked for slow mornings &amp; afternoon chai.
             </h1>
             <p className="lead">
               Artisan tea cakes from our Nairobi kitchen — marble, banana bread, lemon,
@@ -42,30 +56,44 @@ export default function Home() {
               <Link to="/order" className="btn btn-primary">Order a cake →</Link>
               <a href="#menu" className="btn btn-ghost">See the menu</a>
             </div>
-            <div className="hero-stats">
-              <div className="stat">
-                <strong>{products.length || '6'}</strong>
-                <span>Tea cakes</span>
-              </div>
-              <div className="stat">
-                <strong>{sampleWeight}</strong>
-                <span>Every loaf</span>
-              </div>
-              <div className="stat">
-                <strong>{BUSINESS.noticeHours}h</strong>
-                <span>Order notice</span>
-              </div>
-            </div>
           </div>
           <div className="hero-art">
-            <span className="cake-emoji">🍰</span>
+            {slides.length === 0 ? (
+              <span className="cake-emoji">🍰</span>
+            ) : (
+              slides.map((p, i) => (
+                <div
+                  key={p.id}
+                  className={`hero-slide ${i === current ? 'active' : ''}`}
+                  style={{ background: p.art }}
+                  aria-hidden={i !== current}
+                >
+                  {p.image
+                    ? <img src={imageUrl(p.image)} alt={p.name} className="hero-slide-img" />
+                    : <span className="cake-emoji">{p.emoji}</span>}
+                </div>
+              ))
+            )}
             <div className="hero-badge">
               <span className="dot" />
               <span>
-                <small>Freshly baked &amp; delivered across</small>
-                <strong>Nairobi</strong>
+                <small>Freshly baked</small>
+                <strong>{slides.length ? slides[current].name : 'Nairobi'}</strong>
               </span>
             </div>
+            {slides.length > 1 && (
+              <div className="hero-dots">
+                {slides.map((p, i) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    className={`hero-dot ${i === current ? 'on' : ''}`}
+                    aria-label={`Show ${p.name}`}
+                    onClick={() => setSlide(i)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -74,9 +102,6 @@ export default function Home() {
         <div className="container">
           <div className="section-head">
             <div className="eyebrow">Our menu</div>
-            <h2>Freshly baked tea cakes</h2>
-            <p>Made to order, baked fresh. Pick your favourite, choose how many,
-              and tell us when you need it.</p>
           </div>
 
           {categories.length > 1 && (

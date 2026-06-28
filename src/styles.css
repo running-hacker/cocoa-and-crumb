@@ -21,7 +21,7 @@
   --radius-sm: 14px;
 
   --serif: 'Cormorant Garamond', Georgia, serif;
-  --sans: 'Nunito Sans', system-ui, -apple-system, sans-serif;
+  --sans: 'Montserrat', system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -191,6 +191,13 @@ img {
   background: var(--caramel);
   border-radius: 2px;
 }
+/* The "Order now" button is an <a> inside .nav-links, so the link colour above would
+   otherwise win and wash out the button text. Keep it cream for contrast on the dark
+   pill (including on hover, where .nav-links a:hover sets a dark colour). */
+.nav-links a.btn-primary,
+.nav-links a.btn-primary:hover {
+  color: var(--cream);
+}
 
 /* ---------- Hero ---------- */
 .hero {
@@ -264,6 +271,45 @@ img {
 .hero-art .cake-emoji {
   font-size: clamp(8rem, 18vw, 13rem);
   filter: drop-shadow(0 22px 28px rgba(46, 33, 27, 0.3));
+}
+/* Hero slideshow — each cake crossfades over the next. */
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-slide.active {
+  opacity: 1;
+}
+.hero-slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-dots {
+  position: absolute;
+  bottom: 26px;
+  right: 24px;
+  display: flex;
+  gap: 7px;
+  z-index: 2;
+}
+.hero-dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: rgba(251, 247, 241, 0.55);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.hero-dot.on {
+  background: var(--vanilla);
+  transform: scale(1.3);
 }
 .hero-badge {
   position: absolute;
@@ -828,7 +874,7 @@ img {
 }
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 40px;
   margin-bottom: 36px;
 }
@@ -846,6 +892,17 @@ img {
 }
 .footer a:hover {
   color: #fff;
+}
+.footer a.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.footer-social svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  fill: currentColor;
 }
 .footer-bottom {
   border-top: 1px solid rgba(227, 205, 181, 0.2);

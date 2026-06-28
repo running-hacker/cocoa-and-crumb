@@ -7,10 +7,7 @@ export default function Navbar() {
       <div className="container nav-inner">
         <Link to="/" className="brand">
           <span className="brand-mark">RP</span>
-          <span>
-            <span className="brand-name">{BUSINESS.name}</span>
-            <span className="brand-tag">{BUSINESS.tagline}</span>
-          </span>
+          <span className="brand-name">{BUSINESS.name}</span>
         </Link>
         <div className="nav-links">
           <NavLink to="/" end>Menu</NavLink>
