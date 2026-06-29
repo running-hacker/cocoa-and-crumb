@@ -49,7 +49,7 @@ export default function Home() {
               Baked for slow mornings &amp; afternoon chai.
             </h1>
             <p className="lead">
-              Artisan tea cakes from our Nairobi kitchen — marble, banana bread, lemon,
+              Artisan tea cakes from our Nairobi kitchen: marble, banana bread, lemon,
               chocolate and more. Freshly baked to order and delivered to your door.
             </p>
             <div className="hero-cta">

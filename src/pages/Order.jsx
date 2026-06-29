@@ -206,9 +206,6 @@ export default function Order() {
                   </button>
                 ))}
               </div>
-              <p style={{ fontSize: '0.78rem', color: 'var(--muted)', margin: '10px 2px 0' }}>
-                Need a bigger order or a custom size? Pop it in the special requests below.
-              </p>
             </div>
 
             <div className="field">
