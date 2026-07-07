@@ -426,7 +426,11 @@ async function supabaseStore() {
       const { ext, mime, buffer } = parseDataUrl(dataUrl)
       await db.storage.createBucket(IMAGE_BUCKET, { public: true }).catch(() => {})
       const name = `${crypto.randomUUID()}.${ext}`
-      const { error } = await db.storage.from(IMAGE_BUCKET).upload(name, buffer, { contentType: mime, upsert: false })
+      // uuid filenames never change, so let browsers/CDN cache the photo for a year —
+      // that's what makes it reappear instantly on refresh instead of re-downloading.
+      const { error } = await db.storage
+        .from(IMAGE_BUCKET)
+        .upload(name, buffer, { contentType: mime, upsert: false, cacheControl: '31536000' })
       if (error) throw new Error(error.message)
       const { data } = db.storage.from(IMAGE_BUCKET).getPublicUrl(name)
       return { url: data.publicUrl }

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { getProducts, imageUrl } from '../data/products.js'
+import { getProducts } from '../data/products.js'
+import ProductImage from '../components/ProductImage.jsx'
 import { getSettings } from '../data/settings.js'
 import { BUSINESS, formatPrice, depositFor, getBusiness } from '../data/business.js'
 import { initializePayment } from '../data/payments.js'
@@ -304,9 +305,9 @@ export default function Order() {
           </div>
 
           <aside className="panel summary">
-            <div className="sum-art" style={{ background: product.art }}>
+            <div className="sum-art" style={{ background: product.image ? 'var(--cream-deep)' : product.art }}>
               {product.image
-                ? <img src={imageUrl(product.image)} alt={product.name} className="sum-img" />
+                ? <ProductImage image={product.image} alt={product.name} className="sum-img" />
                 : <span>{product.emoji}</span>}
             </div>
             <h3 style={{ marginBottom: 16 }}>{product.name}</h3>

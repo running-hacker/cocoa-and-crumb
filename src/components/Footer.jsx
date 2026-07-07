@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { BUSINESS } from '../data/business.js'
 
 const WhatsAppIcon = () => (
@@ -23,28 +22,19 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="container">
-        <div className="footer-grid">
-          <div>
-            <h4>Order</h4>
-            <Link to="/">Menu</Link>
-            <Link to="/order">Place an order</Link>
-            <Link to="/track">Track your order</Link>
-          </div>
-          <div>
-            <h4>Say hello</h4>
-            <a className="footer-social" href={`https://wa.me/${BUSINESS.whatsapp}`} target="_blank" rel="noreferrer">
-              <WhatsAppIcon />
-              <span>{BUSINESS.phone}</span>
-            </a>
-            <a className="footer-social" href={`https://instagram.com/${BUSINESS.instagram}`} target="_blank" rel="noreferrer">
-              <InstagramIcon />
-              <span>@{BUSINESS.instagram}</span>
-            </a>
-            <a className="footer-social" href={`https://tiktok.com/@${BUSINESS.tiktok}`} target="_blank" rel="noreferrer">
-              <TikTokIcon />
-              <span>@{BUSINESS.tiktok}</span>
-            </a>
-          </div>
+        <div className="footer-social-row">
+          <a className="footer-social" href={`https://wa.me/${BUSINESS.whatsapp}`} target="_blank" rel="noreferrer">
+            <WhatsAppIcon />
+            <span>{BUSINESS.phone}</span>
+          </a>
+          <a className="footer-social" href={`https://instagram.com/${BUSINESS.instagram}`} target="_blank" rel="noreferrer">
+            <InstagramIcon />
+            <span>@{BUSINESS.instagram}</span>
+          </a>
+          <a className="footer-social" href={`https://tiktok.com/@${BUSINESS.tiktok}`} target="_blank" rel="noreferrer">
+            <TikTokIcon />
+            <span>@{BUSINESS.tiktok}</span>
+          </a>
         </div>
         <div className="footer-bottom">
           Freshly baked to order · {BUSINESS.noticeHours} hours notice · © {new Date().getFullYear()} {BUSINESS.name}, {BUSINESS.location}

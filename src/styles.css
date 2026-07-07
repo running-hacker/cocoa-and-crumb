@@ -20,7 +20,9 @@
   --radius: 22px;
   --radius-sm: 14px;
 
-  --serif: 'Cormorant Garamond', Georgia, serif;
+  /* Single-font brand: everything is Montserrat. --serif is kept as the "display"
+     role (headings, prices, codes) so weights/sizes can diverge later if wanted. */
+  --serif: 'Montserrat', system-ui, -apple-system, sans-serif;
   --sans: 'Montserrat', system-ui, -apple-system, sans-serif;
 }
 
@@ -46,8 +48,8 @@ h1, h2, h3, h4 {
   font-weight: 600;
   color: var(--cocoa);
   margin: 0;
-  line-height: 1.1;
-  letter-spacing: 0.2px;
+  line-height: 1.15;
+  letter-spacing: -0.3px; /* Montserrat tracks wide at display sizes */
 }
 
 a {
@@ -225,7 +227,8 @@ img {
   align-items: center;
 }
 .hero h1 {
-  font-size: clamp(2.8rem, 6vw, 4.6rem);
+  font-size: clamp(2.3rem, 5vw, 3.7rem);
+  letter-spacing: -1px;
   margin-bottom: 22px;
 }
 .hero h1 em {
@@ -875,26 +878,21 @@ img {
   padding: 56px 0 30px;
   margin-top: 40px;
 }
-.footer-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  margin-bottom: 36px;
+.footer-social-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 36px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
 }
-.footer h4 {
-  color: var(--cream);
-  font-size: 1.2rem;
-  margin-bottom: 14px;
-}
-.footer p,
 .footer a {
-  color: rgba(227, 205, 181, 0.85);
-  font-size: 0.92rem;
-  margin: 6px 0;
-  display: block;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 .footer a:hover {
-  color: #fff;
+  color: var(--latte);
 }
 .footer a.footer-social {
   display: flex;
@@ -902,8 +900,8 @@ img {
   gap: 9px;
 }
 .footer-social svg {
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
   flex: 0 0 auto;
   fill: currentColor;
 }
@@ -923,6 +921,15 @@ img {
 }
 
 /* ---------- Product photos (storefront) ---------- */
+/* Photos fade in when ready; a cached photo (on refresh) is marked loaded before the
+   first paint by ProductImage, so it renders opaque immediately — no placeholder. */
+.product-img {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.product-img.is-loaded {
+  opacity: 1;
+}
 .card-art .tag,
 .card-art .tag-sold {
   z-index: 2;
@@ -1437,7 +1444,6 @@ img {
   .summary { position: static; }
   .stat-row { grid-template-columns: repeat(2, 1fr); }
   .board { grid-template-columns: repeat(2, 1fr); }
-  .footer-grid { grid-template-columns: 1fr; gap: 22px; }
 }
 @media (max-width: 600px) {
   /* Keep brand + Menu + Track + Order-now on one row on small phones: drop the RP

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { getProducts, categoriesFrom, imageUrl } from '../data/products.js'
 import { BUSINESS, formatPrice } from '../data/business.js'
+import ProductImage from '../components/ProductImage.jsx'
 
 export default function Home() {
   const [products, setProducts] = useState([])
@@ -39,6 +40,14 @@ export default function Home() {
     return () => clearInterval(id)
   }, [slides.length])
 
+  // Warm the browser cache for every product photo the moment the menu loads, so cards
+  // and slides paint the real photo instantly instead of a placeholder.
+  useEffect(() => {
+    for (const p of products) {
+      if (p.image) { const im = new Image(); im.src = imageUrl(p.image) }
+    }
+  }, [products])
+
   return (
     <>
       <section className="hero">
@@ -65,11 +74,11 @@ export default function Home() {
                 <div
                   key={p.id}
                   className={`hero-slide ${i === current ? 'active' : ''}`}
-                  style={{ background: p.art }}
+                  style={{ background: p.image ? 'var(--cream-deep)' : p.art }}
                   aria-hidden={i !== current}
                 >
                   {p.image
-                    ? <img src={imageUrl(p.image)} alt={p.name} className="hero-slide-img" />
+                    ? <ProductImage image={p.image} alt={p.name} className="hero-slide-img" />
                     : <span className="cake-emoji">{p.emoji}</span>}
                 </div>
               ))
@@ -126,11 +135,11 @@ export default function Home() {
             <div className="menu-grid">
               {list.map((p) => {
                 const art = (
-                  <div className="card-art" style={{ background: p.art }}>
+                  <div className="card-art" style={{ background: p.image ? 'var(--cream-deep)' : p.art }}>
                     {p.tag && <span className="tag">{p.tag}</span>}
                     {p.soldOut && <span className="tag tag-sold">Sold out</span>}
                     {p.image
-                      ? <img src={imageUrl(p.image)} alt={p.name} className="card-img" loading="lazy" />
+                      ? <ProductImage image={p.image} alt={p.name} className="card-img" />
                       : <span>{p.emoji}</span>}
                   </div>
                 )

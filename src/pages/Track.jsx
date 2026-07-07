@@ -138,7 +138,7 @@ export default function Track() {
 
         {!searched && (
           <p className="empty">
-            Lost your code? <Link to="/" style={{ color: 'var(--caramel)', fontWeight: 700 }}>Browse the menu</Link> or message her directly.
+            Lost your code? <Link to="/" style={{ color: 'var(--caramel)', fontWeight: 700 }}>Browse the menu</Link> or drop us a text.
           </p>
         )}
       </div>
