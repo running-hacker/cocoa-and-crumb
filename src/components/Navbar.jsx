@@ -11,8 +11,8 @@ export default function Navbar() {
         </Link>
         <div className="nav-links">
           <NavLink to="/" end>Menu</NavLink>
-          <NavLink to="/track" className="menu-only">Track order</NavLink>
-          <Link to="/order" className="btn btn-primary" style={{ padding: '10px 22px' }}>
+          <NavLink to="/track">Track order</NavLink>
+          <Link to="/order" className="btn btn-primary">
             Order now
           </Link>
         </div>

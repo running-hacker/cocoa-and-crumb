@@ -169,6 +169,18 @@ function cleanDetails(raw = {}) {
   }
 }
 
+/* Public view of an order. Order codes are only RP-0000..RP-9999, so the code lookup
+ * is guessable by brute force — never hand full customer details to it. Confirmation
+ * and Track only need the first name and a hint of the phone; the Kitchen dashboard
+ * reads the authenticated endpoints and keeps everything. */
+function redactOrder(o) {
+  if (!o) return o
+  const first = String(o.customer?.name || '').trim().split(/\s+/)[0] || ''
+  const digits = String(o.customer?.phone || '').replace(/\D/g, '')
+  const phone = digits.length >= 6 ? `${digits.slice(0, 2)}•• ••• ${digits.slice(-3)}` : ''
+  return { ...o, address: '', customer: { name: first, phone, email: '' } }
+}
+
 // Decide what a successful payment was for and apply it — a first payment (create the
 // order) or a balance top-up (settle the existing order). Used by verify AND the
 // webhook, so both routes behave identically. Returns the affected order (or null).
@@ -333,12 +345,26 @@ app.post('/api/paystack/initialize', async (req, res) => {
   const cake = details.unitPrice * qty
   if (!(cake > 0)) return res.status(400).json({ error: 'This order has no valid total.' })
 
-  // Business details drive both the delivery fees and the deposit rate — read once.
+  // Business details drive the notice window, delivery fees and deposit rate — read once.
   let business = {}
   try {
     business = await getBusiness()
   } catch {
     /* fall back to defaults below */
+  }
+
+  // Enforce the notice window here too — the date input's `min` only guards the UI.
+  // (The server clock is UTC, never ahead of Nairobi, so this can't falsely reject.)
+  const noticeDays = Math.ceil((Number(business.noticeHours) || 0) / 24)
+  if (noticeDays > 0) {
+    const e = new Date()
+    e.setDate(e.getDate() + noticeDays)
+    const earliest = `${e.getFullYear()}-${String(e.getMonth() + 1).padStart(2, '0')}-${String(e.getDate()).padStart(2, '0')}`
+    if (details.date < earliest) {
+      return res.status(400).json({
+        error: `Orders need at least ${business.noticeHours || 48} hours notice — the earliest date we can bake for is ${earliest}.`,
+      })
+    }
   }
 
   // Delivery fee is also authoritative: look the chosen area up in OUR own zone table
@@ -426,7 +452,7 @@ app.get('/api/paystack/verify/:reference', async (req, res) => {
     if (!order) {
       return res.status(422).json({ error: 'Payment succeeded but we could not match it to an order. Please contact us.' })
     }
-    res.json({ paid: true, status: d.status, order })
+    res.json({ paid: true, status: d.status, order: redactOrder(order) })
   } catch (e) {
     res.status(502).json({ error: `Could not verify the payment: ${e.message}` })
   }
@@ -596,11 +622,12 @@ app.get('/api/orders', requireAdmin, async (req, res) => {
 })
 
 // Public: a customer looks up their own order by its code on the Track page.
+// Redacted — see redactOrder above.
 app.get('/api/orders/:code', async (req, res) => {
   try {
     const order = await getOrderByCode(req.params.code)
     if (!order) return res.status(404).json({ error: 'No order found for that code.' })
-    res.json(order)
+    res.json(redactOrder(order))
   } catch (e) {
     res.status(500).json({ error: e.message })
   }

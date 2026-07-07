@@ -41,6 +41,10 @@ export default function OrdersBoard() {
   }, [refresh])
 
   async function handleAdvance(order) {
+    // Completing an order is the "hand-over" moment — nudge if money is still owing.
+    if (STATUS_FLOW[order.status] === 'Completed' && order.balance > 0) {
+      if (!confirm(`${order.code} still has ${formatPrice(order.balance)} owing. Mark it completed anyway?`)) return
+    }
     try {
       await advanceOrder(order)
     } catch (e) {

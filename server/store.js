@@ -306,10 +306,25 @@ async function supabaseStore() {
     async upsertPaidOrder(details, payment) {
       const existing = await db.from('orders').select('*').eq('payment_ref', payment.paymentRef).maybeSingle()
       if (existing.data) return rowToOrder(existing.data)
-      const order = buildOrder(details, payment)
-      const { data, error } = await db.from('orders').insert(orderToRow(order)).select().single()
-      if (error) throw new Error(error.message)
-      return { ...rowToOrder(data), _new: true } // _new: just created (for one-shot notify)
+      let order = buildOrder(details, payment)
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const { data, error } = await db.from('orders').insert(orderToRow(order)).select().single()
+        if (!error) return { ...rowToOrder(data), _new: true } // _new: just created (for one-shot notify)
+        if (error.code === '23505') {
+          // Unique-key clash. Verify and the webhook can race: both pass the existence
+          // check above, then one insert loses on payment_ref — that means the order IS
+          // saved, so hand the winner's row back instead of erroring at a paid customer.
+          if (String(error.message).includes('payment_ref')) {
+            const again = await db.from('orders').select('*').eq('payment_ref', payment.paymentRef).maybeSingle()
+            if (again.data) return rowToOrder(again.data)
+          }
+          // Otherwise the random RP-#### code collided — regenerate and retry.
+          order = buildOrder(details, payment)
+          continue
+        }
+        throw new Error(error.message)
+      }
+      throw new Error('Could not save the order after several attempts.')
     },
     async setStatus(id, status) {
       const { data, error } = await db.from('orders').update({ status }).eq('id', id).select().maybeSingle()

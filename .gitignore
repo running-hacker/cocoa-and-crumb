@@ -4,3 +4,7 @@ dist
 .env.local
 *.log
 .DS_Store
+
+# Local dev data — never commit orders or uploaded photos
+server/data.json
+server/uploads/

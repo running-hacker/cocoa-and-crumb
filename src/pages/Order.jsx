@@ -15,6 +15,14 @@ function minDate() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+// A Kenyan mobile number in any common form: 07XX/01XX..., with or without +254/254,
+// spaces and dashes allowed. A typo here would break order follow-up and the WhatsApp
+// confirmation, so catch it before payment.
+function validKenyanPhone(raw) {
+  const digits = String(raw || '').replace(/\D/g, '')
+  return /^(0[17]\d{8}|254[17]\d{8})$/.test(digits)
+}
+
 export default function Order() {
   const { productId } = useParams()
 
@@ -84,6 +92,10 @@ export default function Order() {
     if (!product) return
     if (!name.trim() || !phone.trim() || !email.trim() || !date) {
       setError('Please add your name, phone, email and the date you need it — Paystack emails your receipt.')
+      return
+    }
+    if (!validKenyanPhone(phone)) {
+      setError('That phone number doesn’t look right — please use a Kenyan number like 0797 528 174.')
       return
     }
     if (isDelivery && !selectedZone) {
