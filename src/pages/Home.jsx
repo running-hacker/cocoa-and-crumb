@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { getProducts, categoriesFrom, imageUrl } from '../data/products.js'
+import { getProducts, categoriesFrom, imageUrl, cachedProducts } from '../data/products.js'
 import { BUSINESS, formatPrice } from '../data/business.js'
 import ProductImage from '../components/ProductImage.jsx'
 
 export default function Home() {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+  // Start from the cached menu so the storefront paints immediately on refresh; the
+  // effect below refreshes it from the API in the background.
+  const [products, setProducts] = useState(cachedProducts)
+  const [loading, setLoading] = useState(() => cachedProducts().length === 0)
   const [category, setCategory] = useState('All')
   const [slide, setSlide] = useState(0)
 

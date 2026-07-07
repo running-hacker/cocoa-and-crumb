@@ -21,9 +21,25 @@ async function jsonOrThrow(r, fallback) {
   return data
 }
 
+// The serverless API can take ~1s to answer (cold start), which would leave the
+// storefront on a placeholder that whole time on every refresh. So we keep the last
+// menu in localStorage and paint it instantly, then refresh it in the background.
+const MENU_CACHE_KEY = 'rp_menu_v1'
+
+export function cachedProducts() {
+  try {
+    const data = JSON.parse(localStorage.getItem(MENU_CACHE_KEY) || '[]')
+    return Array.isArray(data) ? data : []
+  } catch {
+    return []
+  }
+}
+
 export async function getProducts() {
   const r = await fetch(`${API}/api/products`)
-  return jsonOrThrow(r, 'Could not load the menu.')
+  const data = await jsonOrThrow(r, 'Could not load the menu.')
+  try { localStorage.setItem(MENU_CACHE_KEY, JSON.stringify(data)) } catch { /* private mode / quota */ }
+  return data
 }
 
 export async function getProduct(id) {
